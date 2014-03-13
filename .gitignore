@@ -1,3 +1,6 @@
+libccv.py
+ccv_wrapper_wrap.c
+
 *.py[cod]
 
 # C extensions
