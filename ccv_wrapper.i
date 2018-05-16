@@ -11,6 +11,9 @@
 import_array()
 %}
 
+%include "carrays.i"
+%array_class(double, doubleArray);
+
 
 /* ccv_dense_matrix as input */
 %typemap(in)
