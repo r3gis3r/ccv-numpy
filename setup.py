@@ -61,6 +61,7 @@ _libccv = Extension("_libccv",
                    include_dirs = [numpy_include],
                    # Currently we add this manually and need manual build step for libccv
                    extra_objects = ["./ccv/lib/libccv.a"],
+                   swig_opts = ["-threads"],
                    libraries = ["png", "jpeg", "blas"]
                    )
 

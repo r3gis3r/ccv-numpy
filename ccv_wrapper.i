@@ -99,6 +99,7 @@ $1 = &out_array;
 %ignore ccv_icf_multiscale_classifier_cascade_new;
 
 
+%thread;
 %include "./ccv/lib/ccv.h"
-
+%nothread;
 
