@@ -1,14 +1,19 @@
 #!/usr/bin/env python
 
 # System imports
-from distutils.core import Extension, setup
-from distutils      import spawn
-from distutils.command import build_ext
-import subprocess
+import multiprocessing
+import os
 import re
+import subprocess
+from distutils import spawn
+from distutils.core import setup
+from distutils.command import build_ext
+from distutils.command.build import build
 
 # Third-party modules - we depend on numpy for everything
 import numpy
+from setuptools import Extension
+from setuptools.command.install import install
 
 # Obtain the numpy include directory.  This logic works across numpy versions.
 try:
@@ -50,29 +55,67 @@ def get_swig_executable():
 # Subclass extension building command to ensure that distutils to
 # finds the correct SWIG executable
 SWIG_EXECUTABLE = get_swig_executable()
-class my_build_ext(build_ext.build_ext):
+
+
+class CcvBuildExt(build_ext.build_ext):
     def find_swig(self):
         return SWIG_EXECUTABLE
+
+    def build_ccv_static_lib(self):
+        # Run configure/make
+        abs_path = os.path.dirname(os.path.abspath(__file__)) + '/ccv/lib'
+
+        def call(cmd):
+            subprocess.check_call(cmd.split(' '), cwd=abs_path)
+
+        # Run the autotools/make build to generate a python extension module
+        call('./configure')
+        call('make -j%s' % (multiprocessing.cpu_count()))
+
+    def run(self):
+        self.build_ccv_static_lib()
+        # Call super
+        build_ext.build_ext.run(self)
+
+
+class CcvBuild(build):
+    def run(self):
+        self.run_command('build_ext')
+        build.run(self)
+
+
+class CcvInstall(install):
+    def run(self):
+        self.run_command('build_ext')
+        self.do_egg_install()
 
 
 # view extension module
 _libccv = Extension("_libccv",
-                   ["ccv_wrapper.i",],
-                   include_dirs = [numpy_include],
-                   # Currently we add this manually and need manual build step for libccv
-                   extra_objects = ["./ccv/lib/libccv.a"],
-                   swig_opts = ["-threads"],
-                   libraries = ["png", "jpeg", "blas"]
-                   )
+                    ["ccv_wrapper.i", ],
+                    include_dirs=[numpy_include],
+                    # Currently we add this manually and need manual build step for libccv
+                    extra_objects=["./ccv/lib/libccv.a"],
+                    swig_opts=["-threads"],
+                    libraries=["png", "jpeg", "blas"]
+                    )
 
-setup(  name        = "libccv module",
-        description = "Wrapper module for ccv",
-        author      = "r3gis3r",
-        version     = "1.0",
-        ext_modules = [_libccv],
-        py_modules  = ["libccv"],
-        cmdclass    = {"build_ext": my_build_ext},
-        )
+setup(name="libccv",
+      description="Wrapper module for ccv",
+      author="r3gis3r",
+      version="0.0.1",
+      ext_modules=[_libccv],
+      py_modules=["libccv"],
+      cmdclass={
+          "build_ext": CcvBuildExt,
+          "build": CcvBuild,
+          "install": CcvInstall
+      },
 
-
-
+      classifiers=[
+          "Intended Audience :: Developers",
+          "Programming Language :: Python :: 2",
+          "Programming Language :: Python :: Implementation :: CPython",
+          "Topic :: Software Development :: Libraries"
+      ]
+      )
