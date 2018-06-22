@@ -1,0 +1,2 @@
+recursive-include ccv/lib *.c *.h *.py *.cu configure configure.ac *.in makefile
+include *.i

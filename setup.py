@@ -9,9 +9,11 @@ from distutils import spawn
 from distutils.core import setup
 from distutils.command import build_ext
 from distutils.command.build import build
+import distutils.command.install as orig
 
 # Third-party modules - we depend on numpy for everything
 import numpy
+import setuptools
 from setuptools import Extension
 from setuptools.command.install import install
 
@@ -87,7 +89,7 @@ class CcvBuild(build):
 class CcvInstall(install):
     def run(self):
         self.run_command('build_ext')
-        self.do_egg_install()
+        orig.install.run(self)
 
 
 # view extension module
@@ -100,10 +102,19 @@ _libccv = Extension("_libccv",
                     libraries=["png", "jpeg", "blas"]
                     )
 
-setup(name="libccv",
-      description="Wrapper module for ccv",
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
+
+setup(name="ccv-numpy",
+      description="Wrapper module for ccv using numpy arrays interface",
       author="r3gis3r",
+      author_email="r3gis.3r@gmail.com",
       version="0.0.1",
+      long_description=long_description,
+      long_description_content_type="text/markdown",
+      url="https://github.com/r3gis3r/ccv-numpy",
+      packages=setuptools.find_packages(),
       ext_modules=[_libccv],
       py_modules=["libccv"],
       cmdclass={
@@ -113,9 +124,12 @@ setup(name="libccv",
       },
 
       classifiers=[
+          "Development Status :: 3 - Alpha",
           "Intended Audience :: Developers",
+          "License :: OSI Approved :: BSD License",
           "Programming Language :: Python :: 2",
           "Programming Language :: Python :: Implementation :: CPython",
-          "Topic :: Software Development :: Libraries"
+          "Topic :: Software Development :: Libraries",
+          "Topic :: Scientific/Engineering :: Image Recognition"
       ]
       )
