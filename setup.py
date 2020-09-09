@@ -71,7 +71,7 @@ class CcvBuildExt(build_ext.build_ext):
             subprocess.check_call(cmd.split(' '), cwd=abs_path)
 
         # Run the autotools/make build to generate a python extension module
-        call('./configure --without-cuda')
+        call('./configure')
         call('make -j%s' % (multiprocessing.cpu_count()))
 
     def run(self):
