@@ -38,7 +38,7 @@ def get_swig_executable():
 
     # Check that SWIG version is ok
     output = subprocess.check_output([swig_executable, "-version"])
-    swig_version = re.findall(r"SWIG Version ([0-9.]+)", output)[0]
+    swig_version = re.findall(r"SWIG Version ([0-9.]+)", str(output))[0]
     swig_version_ok = True
     swig_minimum_version = [2, 0, 0]
     for i, v in enumerate([int(v) for v in swig_version.split(".")]):
@@ -71,7 +71,7 @@ class CcvBuildExt(build_ext.build_ext):
             subprocess.check_call(cmd.split(' '), cwd=abs_path)
 
         # Run the autotools/make build to generate a python extension module
-        call('./configure')
+        call('./configure --without-cuda')
         call('make -j%s' % (multiprocessing.cpu_count()))
 
     def run(self):
@@ -110,7 +110,7 @@ setup(name="ccv-numpy",
       description="Wrapper module for ccv using numpy arrays interface",
       author="r3gis3r",
       author_email="r3gis.3r@gmail.com",
-      version="0.0.2",
+      version="0.0.4",
       long_description=long_description,
       long_description_content_type="text/markdown",
       url="https://github.com/r3gis3r/ccv-numpy",
@@ -128,6 +128,7 @@ setup(name="ccv-numpy",
           "Intended Audience :: Developers",
           "License :: OSI Approved :: BSD License",
           "Programming Language :: Python :: 2",
+          "Programming Language :: Python :: 3",
           "Programming Language :: Python :: Implementation :: CPython",
           "Topic :: Software Development :: Libraries",
           "Topic :: Scientific/Engineering :: Image Recognition"
