@@ -99,7 +99,7 @@ _libccv = Extension("_libccv",
                     # Currently we add this manually and need manual build step for libccv
                     extra_objects=["./ccv/lib/libccv.a"],
                     swig_opts=["-threads"],
-                    libraries=["png", "jpeg", "blas"]
+                    libraries=["png", "jpeg", "blas", "m"]
                     )
 
 with open("README.md", "r") as fh:
@@ -110,7 +110,7 @@ setup(name="ccv-numpy",
       description="Wrapper module for ccv using numpy arrays interface",
       author="r3gis3r",
       author_email="r3gis.3r@gmail.com",
-      version="0.0.4",
+      version="0.0.5",
       long_description=long_description,
       long_description_content_type="text/markdown",
       url="https://github.com/r3gis3r/ccv-numpy",
