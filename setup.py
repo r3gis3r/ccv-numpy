@@ -29,7 +29,7 @@ def get_swig_executable():
 
     # Find SWIG executable
     swig_executable = None
-    for executable in ["swig", "swig2.0"]:
+    for executable in ["swig", "swig2.0", "swig3.0", "swig4.0"]:
         swig_executable = spawn.find_executable(executable)
         if swig_executable is not None:
             break
