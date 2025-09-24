@@ -4,8 +4,8 @@
 import multiprocessing
 import os
 import re
+import shutil
 import subprocess
-from distutils import spawn
 from distutils.core import setup
 from distutils.command import build_ext
 from distutils.command.build import build
@@ -30,7 +30,7 @@ def get_swig_executable():
     # Find SWIG executable
     swig_executable = None
     for executable in ["swig", "swig2.0", "swig3.0", "swig4.0"]:
-        swig_executable = spawn.find_executable(executable)
+        swig_executable = shutil.which(executable)
         if swig_executable is not None:
             break
     if swig_executable is None:
@@ -110,7 +110,7 @@ setup(name="ccv-numpy",
       description="Wrapper module for ccv using numpy arrays interface",
       author="r3gis3r",
       author_email="r3gis.3r@gmail.com",
-      version="0.0.5",
+      version="0.0.6",
       long_description=long_description,
       long_description_content_type="text/markdown",
       url="https://github.com/r3gis3r/ccv-numpy",
